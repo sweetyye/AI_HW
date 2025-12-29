@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c2addd46-e65e-4c13-bff5-703c8d771546" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/MLWork/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/MLWork/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZHIMAAI/HomeWork/homework2.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZHIMAAI/HomeWork/homework2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ZHIMAAI/HomeWork/homework4_countVectorizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/ZHIMAAI/HomeWork/homework4_countVectorizer.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="36g8HOUiinaR4DEoLLQ0fjL1nLU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/sweety/Desktop/AI/AIHW"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-164cda30dcd9-0af03a5fa574-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.26830.99" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="c2addd46-e65e-4c13-bff5-703c8d771546" name="更改" comment="" />
+      <created>1765416768669</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1765416768669</updated>
+    </task>
+    <servers />
+  </component>
+</project>

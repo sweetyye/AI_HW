@@ -41,31 +41,31 @@ vectorizer = CountVectorizer(analyzer='char', ngram_range=(1, 3))
 X = vectorizer.fit_transform(txt_segmented.split(" "))
 print(X.toarray())
 #获取词表和总词频取词表和总词频
-# feature_names = vectorizer.get_feature_names_out()
-# # print(feature_names)
-# word_freq = X.sum(axis=0).A1  # 转为一维数组
-# # print(word_freq)
+feature_names = vectorizer.get_feature_names_out()
+# print(feature_names)
+word_freq = X.sum(axis=0).A1  # 转为一维数组
+# print(word_freq)
 
-# df = pd.DataFrame({'word': feature_names, 'freq': word_freq})
-# # print(df)
-# df = df.sort_values(by='freq', ascending=False).reset_index(drop=True)
-# top20_df = df.head(20)
-# # print(top20_df)
-# fig, ax = plt.subplots(1, 2, figsize=(14, 5))
-# ax[0].bar(top20_df['word'],top20_df['freq'], color='skyblue')
-# ax[0].set_title("Top 20 words frequcy visilize")
-# ax[0].tick_params(axis='x', rotation=45)
-# ax[0].tick_params(axis='x', labelsize=10)
-# font_path=r"C:\Windows\Fonts\msyh.ttc"
-# font_prop = fm.FontProperties(fname=font_path)
+df = pd.DataFrame({'word': feature_names, 'freq': word_freq})
+# print(df)
+df = df.sort_values(by='freq', ascending=False).reset_index(drop=True)
+top20_df = df.head(20)
+# print(top20_df)
+fig, ax = plt.subplots(1, 2, figsize=(14, 5))
+ax[0].bar(top20_df['word'],top20_df['freq'], color='skyblue')
+ax[0].set_title("Top 20 words frequcy visilize")
+ax[0].tick_params(axis='x', rotation=45)
+ax[0].tick_params(axis='x', labelsize=10)
+font_path=r"C:\Windows\Fonts\msyh.ttc"  
+font_prop = fm.FontProperties(fname=font_path)
 
-# for lbl in ax[0].get_xticklabels():
-#     lbl.set_fontproperties(font_prop)
+for lbl in ax[0].get_xticklabels():
+    lbl.set_fontproperties(font_prop)
 
-# client = wordcloud.WordCloud(font_path=font_path,)
-# client.generate_from_text(txt_segmented).to_image()
-# ax[1].imshow(client)
-# ax[1].axis('off')
-# ax[1].set_title("Top 20 words cloud")
+client = wordcloud.WordCloud(font_path=font_path,)
+client.generate_from_text(txt_segmented).to_image()
+ax[1].imshow(client)
+ax[1].axis('off')
+ax[1].set_title("Top 20 words cloud")
 
-# plt.show()
+plt.show()
