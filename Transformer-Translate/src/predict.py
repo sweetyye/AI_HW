@@ -14,39 +14,46 @@ def predit_batch(model, inputs, en_tokenizer):
     model.eval()
     with torch.no_grad():
         # 编码
-        # context_vector.shape [batch_size, hidden_size]
-        context_vector = model.encoder(inputs)
-        batch_size = inputs.shape[0]
         device = inputs.device
+        src_pad_mask = inputs == model.zh_embedding.padding_idx
+        memory = model.encode(inputs, src_pad_mask)
+        # memory shape [batch_size, src_len, dim_model]
 
         # 解码
-        # decoder_hidden shape [1, batch_size, hidden_size]， RNN  h_0 的形状是 (num_layers * num_directions, batch, hidden_size)
-        decoder_hidden = context_vector.unsqueeze(0)
-
+        # 准备解码器的输入
+        batch_size = inputs.shape[0]
         # 英文<sos>, x, xx, xxxxx... <sos> 作为第一个时间步的输入
         decoder_input = torch.full(
-            (batch_size, 1), fill_value=en_tokenizer.sos_token_index, device=device
+            (batch_size, 1),
+            fill_value=en_tokenizer.sos_token_index,
+            device=device,
         )
+        #decoder_inpu.shape [batch_size, tgt_seq_len]，初始tgt_seq_len=1
 
         # 预测结果缓存
         generated = []
 
         # 记录每个样本是否已经结束
-        is_finished = torch.full((batch_size,), fill_value=False)
+        is_finished = torch.full((batch_size,), fill_value=False,device=device )
 
         # 自回归生成，直到生成<eos>或者达到最大长度
         for i in range(config.MAX_SEQ_LENGTH):
-            decoder_output, decoder_hidden = model.decoder(
-                decoder_input, decoder_hidden
-            )
-            # decoder_output shape : [batch_size, 1, vocab_size]
+            # 正常tgt_mask 用于训练阶段
+            tgt_mask = model.transformer.generate_square_subsequent_mask(
+                decoder_input.size(1)  ## seq_len
+            ).to(device)
+            decoder_output = model.decode(
+                decoder_input, memory, tgt_mask, src_pad_mask
+            )            
+            # decoder_output shape : [batch_size, tgt_seq_len, en_vocab_size]
 
-            # 选择概率最大的词作为下一个输入
-            next_token_idexes = decoder_output.argmax(dim=-1)  # shape: [batch_size, 1]
+
+            # 选择最后一个时间步的token [batch_size, en_vocab_size]，然后选最大概率的token 作为下一个时间步的输入
+            next_token_idexes = decoder_output[:, -1, :].argmax(dim=-1, keepdim=True)  # shape: [batch_size, 1]
             # 保存预测结果
             generated.append(next_token_idexes)
-            # 更新输入 （decoder_input）
-            decoder_input = next_token_idexes
+            # 更新输入 （decoder_input）, 拼接到序列后面
+            decoder_input = torch.cat([decoder_input, next_token_idexes], dim=1)  # 在时间步维度拼接，shape: [batch_size, tgt_seq_len+1]
 
             # 判断是否全部生成了<eos>
             # 判断是否结束
@@ -57,6 +64,7 @@ def predit_batch(model, inputs, en_tokenizer):
             )
             if is_finished.all():
                 break
+
         # 处理预测结果
         # generated: [tensor[batch_size, 1],tensor[batch_size, 1...], seq_len 个[batch_size, 1] -> [batch_size, seq_len]
         # torch.cat 在dim=1 维度上拼接 ->[batch_size, seq_len]
@@ -106,7 +114,7 @@ def run_predict():
 
     print("欢迎使用中英文翻译模型（输入q 或者quit推出）")
     while True:
-        user_input = input("zhong文：")
+        user_input = input("请输入中文：")
         if user_input in ["q", "quit"]:
             break
         if user_input.strip() == "":

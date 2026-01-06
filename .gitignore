@@ -24,7 +24,7 @@ ENV/
 *.env
 tf_env/
 image_processing_steps/
-
+*.pyc
 # ======================
 # 依赖管理
 # ======================
@@ -49,6 +49,7 @@ datasets/
 *.pt
 *.ckpt
 *.model
+*.jsonl
 
 # ======================
 # Jupyter

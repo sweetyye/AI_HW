@@ -14,43 +14,24 @@ def train_one_epoch(model, dataloader, loss_fn, optimizer, device):
     for inputs, targets in tqdm(dataloader, desc="训练"):
         encoder_inputs = inputs.to(device)  # shape (batch_size, src_seq_len)
         targets = targets.to(device)  # shape (batch_size, trg_seq_len)
-        # 去掉最后一个<eos>作为输入  shape (batch_size, trg_seq_len-1)
+        # 去掉最后一个<eos>作为输入  shape (batch_size, trg_seq_len-1),(batch_size, seq_len)
         decoder_inputs = targets[:, :-1]
-        # 去掉第一个<sos>作为目标  shape (batch_size, trg_seq_len-1)
+        # 去掉第一个<sos>作为目标  shape (batch_size, trg_seq_len-1),(batch_size, seq_len)
         decoder_targets = targets[:, 1:]
-        # 编码阶段
-        context_vector = model.encoder(
-            encoder_inputs
-        )  # shape [batch_size, hidden_size]
 
-        # 解码阶段
-        decoder_outputs = []
-        # decoder_hidden_0 shape [1, batch_size, hidden_size]
-        # unsqueeze在指定位置插入一个大小为 1 的新维度
-        decoder_hidden = context_vector.unsqueeze(0)  # 加上第一维，维度为1
-        seq_len = decoder_inputs.shape[1]
-        for i in range(seq_len):
-            # decoder_input = decoder_inputs[:, i].unsqueeze(1)  # decoder_inputs[:, i]会变成(batch_size),unsqueeze 后shape [batch_size, 1]
-            decoder_input = decoder_inputs[:, i : i + 1]  # shape [batch_size, 1]
-            decoder_output, decoder_hidden = model.decoder(
-                decoder_input, decoder_hidden
-            )
-            # decoder_output shape: [batch_size, 1, vocab_size]
-            # seq_len 个[batch_size, 1, vocab_size] 的列表
-            decoder_outputs.append(decoder_output)
-
-        # decoder_outputs： [tensor([batch_size,1,vocab_size])] ->[batch_size * seq_len, vocab_size]
-        # 将多个时间步的输出拼接在一起，形成完整的输出序列
-        # shape [batch_size, seq_len, vocab_size]
-        decoder_outputs = torch.cat(decoder_outputs, dim=1)
-        # shape [batch_size * seq_len, vocab_size]
-        decoder_outputs = decoder_outputs.reshape(-1, decoder_outputs.shape[-1])
-
-        # decoder_targets: [batch_size, seq_len] -> [batch_size * seq_len]
-        decoder_targets = decoder_targets.reshape(-1)
-
+        # 前向传播
+        src_pad_mask = encoder_inputs == model.zh_embedding.padding_idx
+        # trt_len = decoder_inputs.size(1)
+        trt_len = decoder_inputs.shape[1]
+        tgt_mask = model.transformer.generate_square_subsequent_mask(
+            sz=trt_len, device=device
+        )
+        decoder_outputs = model(encoder_inputs, decoder_inputs, src_pad_mask, tgt_mask)
+        # decoder_outputs.shape [batch_zise, sql_len, en_vocab_size]
         # 计算损失
         # CrossEntropyLoss 需要 (N, C) 或 (N, C, d1...)，N = batch_size * seq_len,这里 reshape
+        decoder_outputs = decoder_outputs.reshape(-1, decoder_outputs.shape[-1])
+        decoder_targets = decoder_targets.reshape(-1)
         loss = loss_fn(decoder_outputs, decoder_targets)
 
         # 反向传播
